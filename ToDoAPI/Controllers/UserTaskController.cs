@@ -26,8 +26,8 @@ namespace ToDoAPI.Controllers
         }
 
         [Authorize]
-        [HttpPost("sinc")]
-        public ActionResult Restauration(DateTime date)
+        [HttpGet("restaurar")]
+        public ActionResult Restauration(DateTime? date)
         {
             var user = _userManager.GetUserAsync(HttpContext.User).Result;
 
@@ -35,7 +35,7 @@ namespace ToDoAPI.Controllers
         }
 
         [Authorize]
-        [HttpGet("restaurar")]
+        [HttpPost("sinc")]
         public ActionResult Sinc(List<UserTask> tasks) 
         {
             return Ok(_userTaskRepository.Sinc(tasks));
