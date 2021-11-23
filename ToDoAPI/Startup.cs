@@ -13,6 +13,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ToDoAPI.Database;
+using ToDoAPI.Repositories;
+using ToDoAPI.Repositories.Interfaces;
 
 namespace ToDoAPI
 {
@@ -31,6 +33,10 @@ namespace ToDoAPI
             services.AddDbContext<ToDoContext>(cfg => {
                 cfg.UseSqlite("Data Source=Database\\ToDo.db");
             });
+
+            // Dependencies Repos
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserTaskRepository, UserTaskRepository>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
