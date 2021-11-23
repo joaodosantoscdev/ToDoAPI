@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -50,7 +51,14 @@ namespace ToDoAPI
             services.AddScoped<IUserTaskRepository, UserTaskRepository>();
 
             //Identity Config
-            services.AddDefaultIdentity<ApplicationUser>().AddEntityFrameworkStores<ToDoContext>();
+            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ToDoContext>();
+            services.ConfigureApplicationCookie(cfg => {
+                cfg.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = 401;
+                    return Task.CompletedTask;
+                };
+            });
 
             services.AddControllers();
 

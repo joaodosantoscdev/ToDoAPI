@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using ToDoAPI.Models;
@@ -40,7 +44,7 @@ namespace ToDoAPI.Controllers
                     _signIn.SignInAsync(user, false);
 
                     // Return JWT Token (need to implement)
-                    return Ok();
+                    return Ok(BuildToken(user));
                 } else
                 {
                     return NotFound("Usuário não localizado");
@@ -56,7 +60,7 @@ namespace ToDoAPI.Controllers
         {
             if (ModelState.IsValid)
             {
-                ApplicationUser user = new ApplicationUser
+                ApplicationUser user = new()
                 {
                     UserName = userDTO.Email,
                     FullName = userDTO.Name,
@@ -66,7 +70,7 @@ namespace ToDoAPI.Controllers
 
                 if (!result.Succeeded)
                 {
-                    List<string> errorsList = new List<string>();
+                    List<string> errorsList = new();
                     foreach (var error in result.Errors)
                     {
                         errorsList.Add(error.Description);
@@ -82,6 +86,30 @@ namespace ToDoAPI.Controllers
             {
                 return UnprocessableEntity(ModelState);
             }
+        }
+
+        public object BuildToken(ApplicationUser user)
+        {
+            var claims = new[] {
+                new Claim(JwtRegisteredClaimNames.Email, user.Email)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("key-api-jwt-to-do-application"));
+            var sign = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var exp = DateTime.UtcNow.AddHours(1);
+
+            JwtSecurityToken token = new(
+                issuer: null,
+                audience: null,
+                claims: claims,
+                expires: exp,
+                signingCredentials: sign
+                );
+
+            var tokenJwt = new JwtSecurityTokenHandler().WriteToken(token).ToString();
+
+
+            return new {token = tokenJwt, expiration = exp };
         }
     }
 }
