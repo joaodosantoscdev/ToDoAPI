@@ -58,6 +58,7 @@ namespace ToDoAPI.Controllers
             {
                 ApplicationUser user = new ApplicationUser
                 {
+                    UserName = userDTO.Email,
                     FullName = userDTO.Name,
                     Email = userDTO.Email
                 };

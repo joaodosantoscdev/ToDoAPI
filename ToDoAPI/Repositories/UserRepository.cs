@@ -20,7 +20,7 @@ namespace ToDoAPI.Repositories
         public ApplicationUser Get(string email, string password)
         {
             var user = _userManager.FindByEmailAsync(email).Result;
-            if (_userManager.CheckPasswordAsync(user, email).Result)
+            if (_userManager.CheckPasswordAsync(user, password).Result)
             {
                 return user;
             }

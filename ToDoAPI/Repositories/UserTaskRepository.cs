@@ -19,7 +19,6 @@ namespace ToDoAPI.Repositories
 
         public List<UserTask> Restauration(ApplicationUser user, DateTime? dateLastSinc)
         {
-
             var query = _context.Tasks.Where(t => t.UserId == user.Id).AsQueryable();
             if (dateLastSinc != null)
             {
@@ -31,7 +30,8 @@ namespace ToDoAPI.Repositories
 
         public List<UserTask> Sinc(List<UserTask> tasks)
         {
-            var newTasks = tasks.Where(t => t.IdTaskApi == 0);
+            var newTasks = tasks.Where(t => t.IdTaskApi == 0).ToList(); ;
+            var excludedOrUpdatedTasks = tasks.Where(t => t.IdTaskApi != 0).ToList();
             //Register new record
             if (tasks.Count > 0)
             {
@@ -40,8 +40,7 @@ namespace ToDoAPI.Repositories
                     _context.Tasks.Add(task);
                 }
             }
-
-            var excludedOrUpdatedTasks = tasks.Where(t => t.IdTaskApi != 0);
+          
             // Update records (Excluded)
             if (excludedOrUpdatedTasks.Count() > 0)
             {
