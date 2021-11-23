@@ -37,13 +37,13 @@ namespace ToDoAPI.Repositories
             var result = _userManager.CreateAsync(user, password).Result;
             if (!result.Succeeded)
             {
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new();
                 foreach (var error in result.Errors) 
                 {
                     sb.Append(error.Description);
                 }
                 // USE >> Domain notification
-                throw new Exception($"Usuário nçaio cadastrado {sb.ToString()}");
+                throw new Exception($"Usuário nçaio cadastrado {sb}");
             }
 
         }
