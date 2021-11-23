@@ -10,6 +10,6 @@ namespace ToDoAPI.Repositories.Interfaces
     {
         List<UserTask> Sinc(List<UserTask> tasks);
 
-        List<UserTask> Restauration(ApplicationUser user, DateTime dateLastSinc);
+        List<UserTask> Restauration(ApplicationUser user, DateTime? dateLastSinc);
     }
 }

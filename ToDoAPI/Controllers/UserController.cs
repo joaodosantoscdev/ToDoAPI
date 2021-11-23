@@ -25,6 +25,7 @@ namespace ToDoAPI.Controllers
             _userManager = userManager;
         }
 
+        [HttpPost("login")]
         public ActionResult Login(UserDTO userDTO) 
         {
             ModelState.Remove("ConfirmPassword");
@@ -50,7 +51,7 @@ namespace ToDoAPI.Controllers
                 return UnprocessableEntity(ModelState);
             }
         }
-
+        [HttpPost("")]
         public ActionResult Register(UserDTO userDTO)
         {
             if (ModelState.IsValid)

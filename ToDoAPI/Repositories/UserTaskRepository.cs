@@ -17,7 +17,7 @@ namespace ToDoAPI.Repositories
             _context = context;
         }
 
-        public List<UserTask> Restauration(ApplicationUser user, DateTime dateLastSinc)
+        public List<UserTask> Restauration(ApplicationUser user, DateTime? dateLastSinc)
         {
 
             var query = _context.Tasks.Where(t => t.UserId == user.Id).AsQueryable();

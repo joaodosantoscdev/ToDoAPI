@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ToDoAPI.Database;
+using ToDoAPI.Models;
 using ToDoAPI.Repositories;
 using ToDoAPI.Repositories.Interfaces;
 
@@ -37,6 +38,9 @@ namespace ToDoAPI
             // Dependencies Repos
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserTaskRepository, UserTaskRepository>();
+
+            //Identity Config
+            services.AddDefaultIdentity<ApplicationUser>().AddEntityFrameworkStores<ToDoContext>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
