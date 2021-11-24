@@ -91,7 +91,8 @@ namespace ToDoAPI.Controllers
         public object BuildToken(ApplicationUser user)
         {
             var claims = new[] {
-                new Claim(JwtRegisteredClaimNames.Email, user.Email)
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim (JwtRegisteredClaimNames.Sub, user.Id)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("key-api-jwt-to-do-application"));

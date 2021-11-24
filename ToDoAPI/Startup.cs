@@ -51,7 +51,14 @@ namespace ToDoAPI
             services.AddScoped<IUserTaskRepository, UserTaskRepository>();
 
             //Identity Config
-            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ToDoContext>();
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ToDoContext>()
+                .AddDefaultTokenProviders();
+
+            services.AddAuthentication(cfg => {
+                cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            });
+
             services.ConfigureApplicationCookie(cfg => {
                 cfg.Events.OnRedirectToLogin = context =>
                 {
