@@ -53,6 +53,7 @@ namespace ToDoAPI
             // Dependencies Repos
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserTaskRepository, UserTaskRepository>();
+            services.AddScoped<ITokenRepository, TokenRepository>();
 
             //Identity Config
             services.AddIdentity<ApplicationUser, IdentityRole>()

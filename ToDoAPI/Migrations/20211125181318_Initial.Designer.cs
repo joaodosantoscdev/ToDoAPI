@@ -9,7 +9,7 @@ using ToDoAPI.Database;
 namespace ToDoAPI.Migrations
 {
     [DbContext(typeof(ToDoContext))]
-    [Migration("20211122215352_Initial")]
+    [Migration("20211125181318_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -213,9 +213,43 @@ namespace ToDoAPI.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("ToDoAPI.Models.UserTask", b =>
+            modelBuilder.Entity("ToDoAPI.Models.Token", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("Att")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ExpirationRefreshToken")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ExpirationToken")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Used")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Token");
+                });
+
+            modelBuilder.Entity("ToDoAPI.Models.UserTask", b =>
+                {
+                    b.Property<int>("IdTaskApi")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -234,6 +268,12 @@ namespace ToDoAPI.Migrations
                     b.Property<bool>("Done")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("Excluded")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("IdTaskApp")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Place")
                         .HasColumnType("TEXT");
 
@@ -246,7 +286,7 @@ namespace ToDoAPI.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("IdTaskApi");
 
                     b.HasIndex("UserId");
 
@@ -304,6 +344,15 @@ namespace ToDoAPI.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ToDoAPI.Models.Token", b =>
+                {
+                    b.HasOne("ToDoAPI.Models.ApplicationUser", "User")
+                        .WithMany("Tokens")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ToDoAPI.Models.UserTask", b =>
                 {
                     b.HasOne("ToDoAPI.Models.ApplicationUser", "User")
@@ -316,6 +365,8 @@ namespace ToDoAPI.Migrations
             modelBuilder.Entity("ToDoAPI.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Tasks");
+
+                    b.Navigation("Tokens");
                 });
 #pragma warning restore 612, 618
         }

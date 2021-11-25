@@ -15,5 +15,6 @@ namespace ToDoAPI.Database
         }
 
         public DbSet<UserTask> Tasks { get; set; }
+        public DbSet<Token> Token { get; set; }
     }
 }
