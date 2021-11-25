@@ -10,6 +10,8 @@ namespace ToDoAPI.Repositories.Interfaces
     {
         void Add(ApplicationUser user, string password);
 
+        ApplicationUser GetById(string id);
+
         ApplicationUser Get(string email, string password);
     }
 }

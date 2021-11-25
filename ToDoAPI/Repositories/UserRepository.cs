@@ -32,6 +32,12 @@ namespace ToDoAPI.Repositories
 
         }
 
+        public ApplicationUser GetById(string id)
+        {
+            return _userManager.FindByIdAsync(id).Result;
+            
+        }
+
         public void Add(ApplicationUser user, string password)
         {
             var result = _userManager.CreateAsync(user, password).Result;
