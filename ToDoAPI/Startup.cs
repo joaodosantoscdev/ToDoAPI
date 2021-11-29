@@ -9,15 +9,20 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ToDoAPI.Database;
-using ToDoAPI.Models;
-using ToDoAPI.Repositories;
-using ToDoAPI.Repositories.Interfaces;
+using ToDoAPI.V1.Helpers.Swagger;
+using ToDoAPI.V1.Models;
+using ToDoAPI.V1.Repositories;
+using ToDoAPI.V1.Repositories.Interfaces;
 
 namespace ToDoAPI
 {
@@ -37,51 +42,57 @@ namespace ToDoAPI
             services.Configure<ApiBehaviorOptions>(cfg => {
                 cfg.SuppressModelStateInvalidFilter = true;
             });
-            // AddMvc - API - Config
-            #region
-            services.AddMvc(cfg => {
+
+            //Add Controllers - Config
+            services.AddControllers(cfg =>
+            {
+                cfg.RespectBrowserAcceptHeader = false;
                 cfg.ReturnHttpNotAcceptable = true;
                 cfg.InputFormatters.Add(new XmlSerializerInputFormatter(cfg));
                 cfg.OutputFormatters.Add(new XmlSerializerOutputFormatter());
-            })
-                .AddNewtonsoftJson(cfg =>
-            {
-                cfg.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            });
-            #endregion
+            }).AddNewtonsoftJson();
 
-            // Versioning
-            #region
+            // AddMvc - API - Config
+            #region Add Mvc - Config
+            services.AddMvc(cfg =>
+            {
+
+            });
+
+            #endregion  
+
+            // Api Versioning
+            #region API Versioning - Config
             services.AddApiVersioning(cfg => {
                 cfg.ReportApiVersions = true;
-
                 cfg.AssumeDefaultVersionWhenUnspecified = true;
                 cfg.DefaultApiVersion =  new ApiVersion(1, 0);
             });
             #endregion
 
             // Database Config
+            #region DB - Config
             services.AddDbContext<ToDoContext>(cfg => {
                 cfg.UseSqlite("Data Source=Database\\ToDo.db");
             });
+            #endregion
 
             //  Dependencies Repos
-            #region
+            #region Dependency Inject - Config
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserTaskRepository, UserTaskRepository>();
             services.AddScoped<ITokenRepository, TokenRepository>();
             #endregion
 
             //  Identity Config
-            #region
+            #region Identity - Config
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ToDoContext>()
                 .AddDefaultTokenProviders();
             #endregion
 
             // Authentication Config
-            #region
-            //  JWT Config
+            #region Authentication & JWT - Config
             services.AddAuthentication(cfg => {
                 cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -94,12 +105,12 @@ namespace ToDoAPI
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("key-api-jwt-to-do-application"))
-            };          
+                };
             });
             #endregion
 
             //Authorization Config
-            #region
+            #region Authorization - Config
             services.AddAuthorization(auth =>
             {
                 auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
@@ -120,33 +131,99 @@ namespace ToDoAPI
 
             services.AddControllers();
 
-            services.AddSwaggerGen(c =>
+            //Swagger Config
+            #region  Swagger Doc & Api Swagger Versioning - Config  
+            services.AddSwaggerGen(cfg =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ToDoAPI", Version = "v1" });
+                cfg.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme() { 
+                    In = (ParameterLocation)1,
+                    Type = 0,
+                    Description = "Adicione o JSON WEB TOKEN para autenticar.",
+                    Name = "Authorization"
+                });
+
+                cfg.AddSecurityRequirement(new OpenApiSecurityRequirement{
+                {
+                    new OpenApiSecurityScheme{
+                        Reference = new OpenApiReference{
+                            Id = "Bearer", //The name of the previously defined security scheme.
+                            Type = ReferenceType.SecurityScheme
+                        }
+                    },new List<string>()
+                }
             });
+
+                cfg.ResolveConflictingActions(apiDescription => apiDescription.First());
+                cfg.DocInclusionPredicate((_, api) => !string.IsNullOrWhiteSpace(api.GroupName));
+                cfg.SwaggerDoc("v1", new OpenApiInfo { Title = "ToDoAPI - v1.0", Version = "v1" });
+
+                var projectPath = PlatformServices.Default.Application.ApplicationBasePath;
+                var projectName = $"{PlatformServices.Default.Application.ApplicationName}.xml";
+                var pathXMLFileDoc = Path.Combine(projectPath, projectName);
+
+                cfg.IncludeXmlComments(pathXMLFileDoc);
+                
+                cfg.DocInclusionPredicate((docName, apiDesc) => {
+                    var actionApiVersionModel = apiDesc.ActionDescriptor?.GetApiVersion();
+                    if (actionApiVersionModel == null)
+                    {
+                        return true;
+                    }
+                    if (actionApiVersionModel.DeclaredApiVersions.Any())
+                    {
+                        return actionApiVersionModel.DeclaredApiVersions.Any(v => $"v{v.ToString()}" == docName);
+                    }
+                    return actionApiVersionModel.ImplementedApiVersions.Any(v => $"v{v.ToString()}" == docName);
+                });
+
+                cfg.OperationFilter<ApiVersionOperationFilter>();
+            });
+            
+            
+            services.AddApiVersioning(cfg => {
+                cfg.ReportApiVersions = true;
+                cfg.AssumeDefaultVersionWhenUnspecified = true;
+                cfg.DefaultApiVersion = new ApiVersion(1, 0);
+            });
+            #endregion
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Env Config
+            #region Development Env - Config
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ToDoAPI v1"));
+                app.UseRouting();
+                app.UseStatusCodePages();
+
+
+                app.UseEndpoints(endpoints => endpoints.MapControllers());
             }
+            #endregion
 
             app.UseHttpsRedirection();
             app.UseStatusCodePages();
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
             
+            app.UseRouting();
+
+            app.UseAuthorization();
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            // Swagger APP config
+            #region Swagger App - Config  
+            app.UseSwagger(); // /swagger/v1/swagger.json
+            app.UseSwaggerUI(cfg => {
+                cfg.SwaggerEndpoint("/swagger/v1/swagger.json", "ToDoAPI v1");
+            });
+            #endregion
         }
     }
 }

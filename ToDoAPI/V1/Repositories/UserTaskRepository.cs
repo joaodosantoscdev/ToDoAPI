@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using ToDoAPI.Database;
-using ToDoAPI.Models;
-using ToDoAPI.Repositories.Interfaces;
+using ToDoAPI.V1.Models;
+using ToDoAPI.V1.Repositories.Interfaces;
 
-namespace ToDoAPI.Repositories
+namespace ToDoAPI.V1.Repositories
 {
     public class UserTaskRepository : IUserTaskRepository
     {
@@ -42,7 +41,7 @@ namespace ToDoAPI.Repositories
             }
           
             // Update records (Excluded)
-            if (excludedOrUpdatedTasks.Count() > 0)
+            if (excludedOrUpdatedTasks.Count > 0)
             {
                 foreach (var task in excludedOrUpdatedTasks)
                 {

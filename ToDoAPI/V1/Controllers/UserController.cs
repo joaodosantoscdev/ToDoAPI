@@ -1,23 +1,19 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using ToDoAPI.Models;
-using ToDoAPI.Repositories;
-using ToDoAPI.Repositories.Interfaces;
+using ToDoAPI.V1.Models;
+using ToDoAPI.V1.Repositories.Interfaces;
 
-namespace ToDoAPI.Controllers
+namespace ToDoAPI.V1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiVersion("1")]
     public class UserController : ControllerBase
     {
         private readonly ITokenRepository _tokenRepository;
@@ -34,7 +30,15 @@ namespace ToDoAPI.Controllers
             _userManager = userManager;
             _tokenRepository = tokenRepository;
         }
-
+        /// <summary>
+        /// Efetua o Login do usuário e libera o token de acesso.
+        /// </summary>
+        /// <param name="userDTO">Usuário</param>
+        /// /// <response code="200">Sucesso</response>
+        /// <response code="422">Entidade não processada.</response>
+        /// <response code="404">Não foi encontrado usuário especificado.</response>
+        /// <response code="401">Usuário não autorizado.</response>
+        /// <returns>Token com data de expiração e emissão</returns>
         [HttpPost("login")]
         public ActionResult Login(UserDTO userDTO) 
         {
@@ -63,6 +67,14 @@ namespace ToDoAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Refresh/Renova o Token de acesso.
+        /// </summary>
+        /// <param name="tokenDTO">Token</param>
+        /// <response code="200">Sucesso</response>
+        /// <response code="404">Não foi encontrado usuário especificado.</response>
+        /// <response code="401">Usuário não autorizado.</response>
+        /// <returns>Renova e entrega Token com data de expiração e emissão</returns>
         [HttpPost("renovar")]
         public IActionResult Renew(TokenDTO tokenDTO)
         {
@@ -84,6 +96,13 @@ namespace ToDoAPI.Controllers
             return GenerateToken(user);
         }
 
+        /// <summary>
+        /// Cadastra um novo usuário na base de dados.
+        /// </summary>
+        /// <param name="userDTO">Usuário</param>
+        /// <response code="200">Sucesso</response>
+        /// <response code="422">Entidade não processada.</response>
+        /// <returns>Usuário registrado na base de dados</returns>
         [HttpPost("")]
         public ActionResult Register(UserDTO userDTO)
         {
@@ -117,7 +136,7 @@ namespace ToDoAPI.Controllers
             }
         }
 
-        public TokenDTO BuildToken(ApplicationUser user)
+        private TokenDTO BuildToken(ApplicationUser user)
         {
             var claims = new[] {
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),

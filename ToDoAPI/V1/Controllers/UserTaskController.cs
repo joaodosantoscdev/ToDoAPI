@@ -4,15 +4,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ToDoAPI.Models;
-using ToDoAPI.Repositories.Interfaces;
+using ToDoAPI.V1.Models;
+using ToDoAPI.V1.Repositories.Interfaces;
 
-namespace ToDoAPI.Controllers
+namespace ToDoAPI.V1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiVersion("1")]
     public class UserTaskController : ControllerBase
     {
         private readonly IUserTaskRepository _userTaskRepository;
@@ -25,6 +24,13 @@ namespace ToDoAPI.Controllers
             _userTaskRepository = userTaskRepository;
         }
 
+        /// <summary>
+        /// Restaura os dados contidos no App de Tarefas.
+        /// </summary>
+        /// <param name="date">Data de Restauração</param>
+        /// <response code="200">Sucesso</response>
+        /// <response code="401">Usuário não autorizado.</response>
+        /// <returns>Tarefas restauradas para o App (Backup)</returns>
         [Authorize]
         [HttpGet("restaurar")]
         public ActionResult Restauration(DateTime? date)
@@ -34,6 +40,13 @@ namespace ToDoAPI.Controllers
             return Ok(_userTaskRepository.Restauration(user, date));
         }
 
+        /// <summary>
+        /// Sincroniza e atualiza os dados contidos no App de Tarefas.
+        /// </summary>
+        /// <param name="tasks">Tarefas</param>
+        /// <response code="200">Sucesso</response>
+        /// <response code="401">Usuário não autorizado.</response>
+        /// <returns>Atualiza as tarefas para o App (Backup)</returns>
         [Authorize]
         [HttpPost("sinc")]
         public ActionResult Sinc(List<UserTask> tasks) 

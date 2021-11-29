@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ToDoAPI.Models;
+using ToDoAPI.V1.Models;
 
 namespace ToDoAPI.Database
 {
