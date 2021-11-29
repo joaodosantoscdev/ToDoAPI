@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using ToDoAPI.Models;
-using ToDoAPI.Repositories.Interfaces;
+using ToDoAPI.V1.Models;
+using ToDoAPI.V1.Repositories.Interfaces;
 
-namespace ToDoAPI.Repositories
+namespace ToDoAPI.V1.Repositories
 {
     public class UserRepository : IUserRepository
     {

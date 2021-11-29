@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ToDoAPI.Models
+namespace ToDoAPI.V1.Models
 {
     public class Token
     {

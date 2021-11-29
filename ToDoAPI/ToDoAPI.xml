@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ToDoAPI</name>
+    </assembly>
+    <members>
+        <member name="M:ToDoAPI.V1.Controllers.UserController.Login(ToDoAPI.V1.Models.UserDTO)">
+            <summary>
+            Efetua o Login do usuário e libera o token de acesso.
+            </summary>
+            <param name="userDTO">Usuário</param>
+            /// <response code="200">Sucesso</response>
+            <response code="422">Entidade não processada.</response>
+            <response code="404">Não foi encontrado usuário especificado.</response>
+            <response code="401">Usuário não autorizado.</response>
+            <returns>Token com data de expiração e emissão</returns>
+        </member>
+        <member name="M:ToDoAPI.V1.Controllers.UserController.Renew(ToDoAPI.V1.Models.TokenDTO)">
+            <summary>
+            Refresh/Renova o Token de acesso.
+            </summary>
+            <param name="tokenDTO">Token</param>
+            <response code="200">Sucesso</response>
+            <response code="404">Não foi encontrado usuário especificado.</response>
+            <response code="401">Usuário não autorizado.</response>
+            <returns>Renova e entrega Token com data de expiração e emissão</returns>
+        </member>
+        <member name="M:ToDoAPI.V1.Controllers.UserController.Register(ToDoAPI.V1.Models.UserDTO)">
+            <summary>
+            Cadastra um novo usuário na base de dados.
+            </summary>
+            <param name="userDTO">Usuário</param>
+            <response code="200">Sucesso</response>
+            <response code="422">Entidade não processada.</response>
+            <returns>Usuário registrado na base de dados</returns>
+        </member>
+        <member name="M:ToDoAPI.V1.Controllers.UserTaskController.Restauration(System.Nullable{System.DateTime})">
+            <summary>
+            Restaura os dados contidos no App de Tarefas.
+            </summary>
+            <param name="date">Data de Restauração</param>
+            <response code="200">Sucesso</response>
+            <response code="401">Usuário não autorizado.</response>
+            <returns>Tarefas restauradas para o App (Backup)</returns>
+        </member>
+        <member name="M:ToDoAPI.V1.Controllers.UserTaskController.Sinc(System.Collections.Generic.List{ToDoAPI.V1.Models.UserTask})">
+            <summary>
+            Sincroniza e atualiza os dados contidos no App de Tarefas.
+            </summary>
+            <param name="tasks">Tarefas</param>
+            <response code="200">Sucesso</response>
+            <response code="401">Usuário não autorizado.</response>
+            <returns>Atualiza as tarefas para o App (Backup)</returns>
+        </member>
+    </members>
+</doc>
