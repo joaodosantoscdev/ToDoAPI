@@ -28,36 +28,27 @@ namespace ToDoAPI
 {
     public class Startup
     {
+        // DI Inject
+        #region DI Inject
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
+        #endregion
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            // Config Method
+            #region Configure Method
             services.Configure<ApiBehaviorOptions>(cfg => {
                 cfg.SuppressModelStateInvalidFilter = true;
             });
-
-            //Add Controllers - Config
-            services.AddControllers(cfg =>
-            {
-                cfg.RespectBrowserAcceptHeader = false;
-                cfg.ReturnHttpNotAcceptable = true;
-                cfg.InputFormatters.Add(new XmlSerializerInputFormatter(cfg));
-                cfg.OutputFormatters.Add(new XmlSerializerOutputFormatter());
-            }).AddNewtonsoftJson();
+            #endregion
 
             // AddMvc - API - Config
             #region Add Mvc - Config
-            services.AddMvc(cfg =>
-            {
-
-            });
+            services.AddMvc();
 
             #endregion  
 
@@ -70,7 +61,7 @@ namespace ToDoAPI
             });
             #endregion
 
-            // Database Config
+            // Database - Config
             #region DB - Config
             services.AddDbContext<ToDoContext>(cfg => {
                 cfg.UseSqlite("Data Source=Database\\ToDo.db");
@@ -84,14 +75,14 @@ namespace ToDoAPI
             services.AddScoped<ITokenRepository, TokenRepository>();
             #endregion
 
-            //  Identity Config
+            //  Identity - Config
             #region Identity - Config
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ToDoContext>()
                 .AddDefaultTokenProviders();
             #endregion
 
-            // Authentication Config
+            // Authentication - Config
             #region Authentication & JWT - Config
             services.AddAuthentication(cfg => {
                 cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -109,7 +100,7 @@ namespace ToDoAPI
             });
             #endregion
 
-            //Authorization Config
+            //Authorization - Config
             #region Authorization - Config
             services.AddAuthorization(auth =>
             {
@@ -129,9 +120,18 @@ namespace ToDoAPI
             });
             #endregion
 
-            services.AddControllers();
+            //Add Controllers - Config
+            #region Add Controllers - Config
+            services.AddControllers(cfg =>
+            {
+                cfg.RespectBrowserAcceptHeader = false;
+                cfg.ReturnHttpNotAcceptable = true;
+                cfg.InputFormatters.Add(new XmlSerializerInputFormatter(cfg));
+                cfg.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+            }).AddNewtonsoftJson();
+            #endregion
 
-            //Swagger Config
+            //Swagger - Config
             #region  Swagger Doc & Api Swagger Versioning - Config  
             services.AddSwaggerGen(cfg =>
             {
@@ -189,7 +189,6 @@ namespace ToDoAPI
 
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             // Env Config
@@ -204,18 +203,22 @@ namespace ToDoAPI
             }
             #endregion
 
+            // Use APP - Config
+            #region Use APP - Config
             app.UseHttpsRedirection();
-            app.UseStatusCodePages();
-            
+            app.UseStatusCodePages();          
             app.UseRouting();
-
             app.UseAuthorization();
             app.UseAuthentication();
+            #endregion
 
+            // Endpoints - Config
+            #region Endpoints APP - Config
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+            #endregion
 
             // Swagger APP config
             #region Swagger App - Config  
@@ -225,5 +228,6 @@ namespace ToDoAPI
             });
             #endregion
         }
+
     }
 }

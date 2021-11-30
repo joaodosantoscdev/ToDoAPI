@@ -16,6 +16,8 @@ namespace ToDoAPI.V1.Controllers
     [ApiVersion("1")]
     public class UserController : ControllerBase
     {
+        // Dependencies Injected | Constructor
+        #region DI Injected
         private readonly ITokenRepository _tokenRepository;
         private readonly IUserRepository _userRepository;
         private readonly SignInManager<ApplicationUser> _signIn;
@@ -30,6 +32,10 @@ namespace ToDoAPI.V1.Controllers
             _userManager = userManager;
             _tokenRepository = tokenRepository;
         }
+        #endregion
+
+        // Login UserController Method (using JWT)
+        #region Login Method - Controller 
         /// <summary>
         /// Efetua o Login do usuário e libera o token de acesso.
         /// </summary>
@@ -66,7 +72,10 @@ namespace ToDoAPI.V1.Controllers
                 return UnprocessableEntity(ModelState);
             }
         }
+        #endregion
 
+        // Renew Token UserController Method
+        #region Renew Token Method - Controller 
         /// <summary>
         /// Refresh/Renova o Token de acesso.
         /// </summary>
@@ -85,7 +94,7 @@ namespace ToDoAPI.V1.Controllers
                 return NotFound();
             }
 
-            // old RefreshToken, update and disable
+            //  Gets old RefreshToken, update and disable
             refreshTokenDB.Att = DateTime.Now;
             refreshTokenDB.Used = true;
             _tokenRepository.Update(refreshTokenDB);
@@ -95,7 +104,10 @@ namespace ToDoAPI.V1.Controllers
 
             return GenerateToken(user);
         }
+        #endregion
 
+        // Register UserController Method
+        #region Register Method - Controller 
         /// <summary>
         /// Cadastra um novo usuário na base de dados.
         /// </summary>
@@ -135,7 +147,10 @@ namespace ToDoAPI.V1.Controllers
                 return UnprocessableEntity(ModelState);
             }
         }
+        #endregion
 
+        // Token Generation
+        #region Private Methods (Token Generation)
         private TokenDTO BuildToken(ApplicationUser user)
         {
             var claims = new[] {
@@ -180,5 +195,6 @@ namespace ToDoAPI.V1.Controllers
             _tokenRepository.Add(tokenModel);
             return Ok(token);
         }
+        #endregion
     }
 }

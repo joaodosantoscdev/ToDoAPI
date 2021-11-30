@@ -14,16 +14,20 @@ namespace ToDoAPI.V1.Controllers
     [ApiVersion("1")]
     public class UserTaskController : ControllerBase
     {
+        // Dependencies Injected | Constructor
+        #region DI Injected
         private readonly IUserTaskRepository _userTaskRepository;
         private readonly UserManager<ApplicationUser> _userManager;
-
-        
+      
         public UserTaskController(IUserTaskRepository userTaskRepository, UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
             _userTaskRepository = userTaskRepository;
         }
+        #endregion
 
+        // Restauration of the Local Data based on the User
+        #region Restauration UserTask Method - Controller
         /// <summary>
         /// Restaura os dados contidos no App de Tarefas.
         /// </summary>
@@ -39,7 +43,10 @@ namespace ToDoAPI.V1.Controllers
 
             return Ok(_userTaskRepository.Restauration(user, date));
         }
+        #endregion
 
+        // Syncronize the DB data and update  User Local Data
+        #region Sinc UserTask Method - Controller
         /// <summary>
         /// Sincroniza e atualiza os dados contidos no App de Tarefas.
         /// </summary>
@@ -53,5 +60,7 @@ namespace ToDoAPI.V1.Controllers
         {
             return Ok(_userTaskRepository.Sinc(tasks));
         }
+        #endregion
+
     }
 }

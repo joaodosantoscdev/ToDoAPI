@@ -9,13 +9,18 @@ namespace ToDoAPI.V1.Repositories
 {
     public class UserTaskRepository : IUserTaskRepository
     {
+        // Dependencies Injected | Constructor
+        #region DI Injected
         private readonly ToDoContext _context;
 
         public UserTaskRepository(ToDoContext context)
         {
             _context = context;
         }
+        #endregion
 
+        // Restauration for local backup acording to the DB
+        #region UserTask RESTAURATION - Database
         public List<UserTask> Restauration(ApplicationUser user, DateTime? dateLastSinc)
         {
             var query = _context.Tasks.Where(t => t.UserId == user.Id).AsQueryable();
@@ -26,7 +31,10 @@ namespace ToDoAPI.V1.Repositories
 
             return query.ToList<UserTask>();
         }
+        #endregion
 
+        // Synchronize the local user data with the user data on DB
+        #region UserTask SINC - Database
         public List<UserTask> Sinc(List<UserTask> tasks)
         {
             var newTasks = tasks.Where(t => t.IdTaskApi == 0).ToList(); ;
@@ -52,5 +60,6 @@ namespace ToDoAPI.V1.Repositories
             _context.SaveChanges();
             return newTasks.ToList();
         }
+        #endregion
     }
 }
