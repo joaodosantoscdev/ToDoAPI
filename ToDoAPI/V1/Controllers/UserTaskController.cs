@@ -35,7 +35,7 @@ namespace ToDoAPI.V1.Controllers
         /// <response code="200">Sucesso</response>
         /// <response code="401">Usuário não autorizado.</response>
         /// <returns>Tarefas restauradas para o App (Backup)</returns>
-        [Authorize]
+        /*[Authorize]*/
         [HttpGet("restaurar")]
         public ActionResult Restauration(DateTime? date)
         {
@@ -54,7 +54,7 @@ namespace ToDoAPI.V1.Controllers
         /// <response code="200">Sucesso</response>
         /// <response code="401">Usuário não autorizado.</response>
         /// <returns>Atualiza as tarefas para o App (Backup)</returns>
-        [Authorize]
+        /*[Authorize]*/
         [HttpPost("sinc")]
         public ActionResult Sinc(List<UserTask> tasks) 
         {

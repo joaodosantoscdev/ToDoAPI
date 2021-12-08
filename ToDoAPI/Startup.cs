@@ -65,6 +65,7 @@ namespace ToDoAPI
             #region DB - Config
             services.AddDbContext<ToDoContext>(cfg => {
                 cfg.UseSqlite("Data Source=Database\\ToDo.db");
+                cfg.EnableSensitiveDataLogging();
             });
             #endregion
 
@@ -195,11 +196,6 @@ namespace ToDoAPI
             #region Development Env - Config
             if (env.IsDevelopment())
             {
-                app.UseRouting();
-                app.UseStatusCodePages();
-
-
-                app.UseEndpoints(endpoints => endpoints.MapControllers());
             }
             #endregion
 
