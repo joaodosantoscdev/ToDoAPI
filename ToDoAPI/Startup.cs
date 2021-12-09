@@ -49,7 +49,6 @@ namespace ToDoAPI
             // AddMvc - API - Config
             #region Add Mvc - Config
             services.AddMvc();
-
             #endregion  
 
             // Api Versioning
@@ -129,7 +128,9 @@ namespace ToDoAPI
                 cfg.ReturnHttpNotAcceptable = true;
                 cfg.InputFormatters.Add(new XmlSerializerInputFormatter(cfg));
                 cfg.OutputFormatters.Add(new XmlSerializerOutputFormatter());
-            }).AddNewtonsoftJson();
+            }).AddNewtonsoftJson(cfg =>  
+                cfg.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore)
+            .AddXmlSerializerFormatters();
             #endregion
 
             //Swagger - Config
@@ -204,8 +205,9 @@ namespace ToDoAPI
             app.UseHttpsRedirection();
             app.UseStatusCodePages();          
             app.UseRouting();
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
+            
             #endregion
 
             // Endpoints - Config
